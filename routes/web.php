@@ -11,6 +11,12 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+//Route::get('/', function () {
+//    return view('welcome');
+//});
+
+Route::resource('shop_categories','shop_categoryController');
+
+Route::resource('shops','ShopController');
+
+Route::resource('shopusers','ShopUsersController');
