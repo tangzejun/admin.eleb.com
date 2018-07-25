@@ -59,4 +59,5 @@
             </td>
         </tr>
     </table>
+    {{ $shops->links() }}
 @endsection

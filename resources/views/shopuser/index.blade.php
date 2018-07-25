@@ -28,6 +28,9 @@
                 <a href="{{ route('shopusers.show',[$shopuser]) }}">
                     <button class="btn btn-default"><span class="glyphicon glyphicon-search"></span></button>
                 </a>
+                <div>
+                    <a href="{{ route('shopusers.reset',[$shopuser]) }}"><button class="btn btn-default"><span class="glyphicon glyphicon-edit"></span></button></a>
+                </div>
             </td>
         </tr>
         @endforeach
@@ -37,4 +40,5 @@
             </td>
         </tr>
     </table>
+    {{ $shopusers->links() }}
 @endsection

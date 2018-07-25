@@ -9,15 +9,6 @@
         <input type="email" name="email" value="{{ $shopuser->email }}" class="form-control" id="exampleInputEmail1" placeholder="Email">
     </div>
     <div class="form-group">
-        <label for="exampleInputPassword1">密码</label>
-        <input type="password" name="password" value="{{ $shopuser->password }}" class="form-control" id="exampleInputPassword1" placeholder="Password">
-    </div>
-    <div class="checkbox">
-        <label>
-            <input type="checkbox" name="status" value="{{ $shopuser->status }}" @if($shopuser->status==1)checked @endif> 启用
-        </label>
-    </div>
-    <div class="form-group">
         <label>所属商家</label>
         <select name="shop_id" class="form-control">
             @foreach($shops as $shop)
@@ -25,4 +16,5 @@
             @endforeach
         </select>
     </div>
+    <a href="{{ route('shopusers.status',[$shopuser]) }}"><button>启用</button></a>
 @endsection

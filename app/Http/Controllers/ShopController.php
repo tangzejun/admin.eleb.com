@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Model\Shop;
 use App\Model\Shop_category;
+use App\Model\ShopUser;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class ShopController extends Controller
@@ -19,9 +21,10 @@ class ShopController extends Controller
     //添加
     public function create()
     {
+        $shops = Shop::all();
         //获取分类
         $shop_categories = Shop_category::all();
-        return view('shop/create',compact('shop_categories'));
+        return view('shop/create',compact('shop_categories','shops'));
     }
 
     //添加保存
@@ -74,24 +77,40 @@ class ShopController extends Controller
         $file = $request->shop_img;
         $fileName = $file->store('public/shop_img');
         $fileName = url(Storage::url($fileName));
-        $model = Shop::create([
-            'shop_category_id'=>$request->shop_category_id,
-            'shop_name'=>$request->shop_name,
-            'shop_img'=>$fileName,
-            'shop_rating'=>$request->shop_rating,
-            'brand'=>$request->brand,
-            'on_time'=>$request->on_time,
-            'fengniao'=>$request->fengniao,
-            'bao'=>$request->bao,
-            'piao'=>$request->piao,
-            'zhun'=>$request->zhun,
-            'start_send'=>$request->start_send,
-            'send_cost'=>$request->send_cost,
-            'notice'=>$request->notice,
-            'discount'=>$request->discount,
-            'status'=>$request->status
-        ]);
-        return redirect()->route('shops.index')->with('success','添加成功');
+        DB::beginTransaction();
+        try{
+            $shops = Shop::create([
+                'shop_category_id'=>$request->shop_category_id,
+                'shop_name'=>$request->shop_name,
+                'shop_img'=>$fileName,
+                'shop_rating'=>$request->shop_rating,
+                'brand'=>$request->brand,
+                'on_time'=>$request->on_time,
+                'fengniao'=>$request->fengniao,
+                'bao'=>$request->bao,
+                'piao'=>$request->piao,
+                'zhun'=>$request->zhun,
+                'start_send'=>$request->start_send,
+                'send_cost'=>$request->send_cost,
+                'notice'=>$request->notice,
+                'discount'=>$request->discount,
+                'status'=>1
+            ]);
+            $shopusers = ShopUser::create([
+                'name'=>$request->name,
+                'email'=>$request->email,
+                'password'=>bcrypt($request->password),
+                'status'=>1,
+                'shop_id'=>$request->shop_id
+            ]);
+            if ($shops && $shopusers){
+                DB::commit();
+                return redirect()->route('shops.index')->with('success','添加成功');
+            }
+        }catch (\Exception $e){
+            DB::rollback();
+            return redirect()->route('shops.create')->with('success','添加失败,请重新填写');
+        }
     }
 
     //显示
@@ -112,6 +131,11 @@ class ShopController extends Controller
     {
         //数据验证
         $this->validate($request,[
+            'name'=>'required|max:20|unique:shop_users',
+            'email'=>'required|email|unique:shop_users',
+            'password' => 'required|min:6|confirmed',
+            'password_confirmation' => 'required|min:6',
+            'shop_id'=>'required',
             'shop_category_id'=>'required',
             'shop_name'=>'required|max:20',
             'start_send'=>'required|numeric',
@@ -120,6 +144,17 @@ class ShopController extends Controller
             'discount'=>'required',
             'captcha' => 'required|captcha',
         ],[
+            'name.required'=>'名称不能为空',
+            'name.max'=>'名称长度不能大于20位',
+            'name.unique'=>'该名称已存在',
+            'email.required'=>'邮箱不能为空',
+            'email.email'=>'邮箱格式错误',
+            'email.unique'=>'该邮箱已存在',
+            'password.required'=>'密码必须填写',
+            'password.min'=>'密码长度不能小于6位',
+            'password_confirmation.required'=>'请确认密码',
+            'password.confirmed'=>'两次输入密码不一致',
+            'shop_id.required'=>'所属商户必须选择',
             'shop_category_id.required'=>'店铺所属类型必选',
             'shop_name.required'=>'店铺名称必填',
             'shop_name.max'=>'店铺名称最大不能超过20个字符',
@@ -185,5 +220,28 @@ class ShopController extends Controller
     {
         $shop->delete();
         return redirect()->route('shops.index')->with('success','删除成功');
+    }
+
+    public function status(Shop $shop)
+    {
+        $status = $shop->status;
+        if($status == 0 ){
+            $shop->update([
+                'status'=>1,
+            ]);
+        }else{
+            $shop->update([
+                'status'=>0,
+            ]);
+        }
+        return redirect()->route('shops.index')->with('success','店铺审核通过');
+    }
+
+    public function disable(Shop $shop)
+    {
+        $shop->update([
+            'status'=>-1
+        ]);
+        return redirect()->route('shops.index')->with('success','店铺已禁用');
     }
 }

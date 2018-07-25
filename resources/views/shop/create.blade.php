@@ -1,6 +1,35 @@
 @extends('default')
 @section('contents')
-    <h1>添加商家分类</h1>
+    <h1>注册商家账号</h1>
+    <form action="{{ route('shopusers.store') }}" method="post">
+        @include('_error')
+        <div class="form-group">
+            <label for="exampleInput1">名称</label>
+            <input type="text" name="name"  value="{{ old('name') }}" class="form-control" id="exampleInput1" placeholder="name">
+        </div>
+        <div class="form-group">
+            <label for="exampleInputEmail1">邮箱</label>
+            <input type="email" name="email" value="{{ old('email') }}" class="form-control" id="exampleInputEmail1" placeholder="Email">
+        </div>
+        <div class="form-group">
+            <label for="exampleInputPassword1">密码</label>
+            <input type="password" name="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+        </div>
+        <div class="form-group">
+            <label for="exampleInputPassword2">确认密码</label>
+            <input type="password" name="password_confirmation" class="form-control" id="exampleInputPassword2" placeholder="Password">
+        </div>
+        <div class="form-group">
+            <label>所属商家</label>
+            <select name="shop_id" class="form-control">
+                @foreach($shops as $shop)
+                    <option value="{{ $shop->id }}">{{ $shop->shop_name }}</option>
+                @endforeach
+            </select>
+        </div>
+        <br>
+        <br>
+    <h1>添加商家信息</h1>
     @include('_error')
     <form action="{{ route('shops.store') }}" method="post" enctype="multipart/form-data">
         <div class="form-group">

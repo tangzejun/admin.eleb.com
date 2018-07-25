@@ -1,5 +1,6 @@
 @extends('default')
 @section('contents')
+    <h1>修改商户信息</h1>
     <form action="{{ route('shopusers.update',[$shopuser]) }}" method="post">
         @include('_error')
         <div class="form-group">
