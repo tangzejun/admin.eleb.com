@@ -31,7 +31,7 @@
                         <li><a href="#">帮助页</a></li>
                     </ul>
                 </li>
-                <li class="active"><a href="">活动管理<span class="sr-only">(current)</span></a></li>
+                <li class="active"><a href="{{ route('activitys.index') }}">活动管理<span class="sr-only">(current)</span></a></li>
             </ul>
             <form class="navbar-form navbar-left" role="search" method="get" action="#">
                 <div class="form-group">

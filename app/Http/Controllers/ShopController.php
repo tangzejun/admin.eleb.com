@@ -74,15 +74,17 @@ class ShopController extends Controller
             $request->zhun =0;
         }
         //处理上传文件
-        $file = $request->shop_img;
-        $fileName = $file->store('public/shop_img');
-        $fileName = url(Storage::url($fileName));
+//        $file = $request->shop_img;
+//        $fileName = $file->store('public/shop_img');
+//        $fileName = url(Storage::url($fileName));
+//        $storage = Storage::disk('oss');
+//        $fileName = $storage->putFile('shop',$request->shop_img);
         DB::beginTransaction();
         try{
             $shops = Shop::create([
                 'shop_category_id'=>$request->shop_category_id,
                 'shop_name'=>$request->shop_name,
-                'shop_img'=>$fileName,
+                'shop_img'=>$request->img,
                 'shop_rating'=>$request->shop_rating,
                 'brand'=>$request->brand,
                 'on_time'=>$request->on_time,
@@ -188,10 +190,15 @@ class ShopController extends Controller
             $request->zhun =0;
         }
         //处理上传文件
-        $file = $request->shop_img;
-        $data = [
+        if($request->img != null){
+            $fillName = $request->img;
+        }else{
+            $fillName = $request->old_img;
+        }
+        $shop->update([
             'shop_category_id'=>$request->shop_category_id,
             'shop_name'=>$request->shop_name,
+            'shop_img'=>$fillName,
             'shop_rating'=>$request->shop_rating,
             'brand'=>$request->brand,
             'on_time'=>$request->on_time,
@@ -203,14 +210,8 @@ class ShopController extends Controller
             'send_cost'=>$request->send_cost,
             'notice'=>$request->notice,
             'discount'=>$request->discount,
-            'status'=>$request->status
-        ];
-        if($file){//有文件上传
-            $fileName = $file->store('public/shop_img');
-            $fileName = url(Storage::url($fileName));
-            $data['shop_img']=$fileName;
-        }
-        $shop->update($data);
+            'status'=>1
+        ]);
         //设置提示信息
         return redirect()->route('shops.index')->with('success','更新成功');
     }

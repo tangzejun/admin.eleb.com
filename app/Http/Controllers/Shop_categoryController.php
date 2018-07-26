@@ -36,17 +36,19 @@ class Shop_categoryController extends Controller
         'captcha.captcha'=>'验证码不正确',
     ]);
         //处理上传文件
-        $file = $request->img;
-        $fileName = $file->store('public/img');
-        $fileName = url(Storage::url($fileName));
+//        $file = $request->img;
+//        $fileName = $file->store('public/img');
+//        $fileName = url(Storage::url($fileName));
+//        $storage = Storage::disk('oss');
+//        $fileName = $storage->putFile('shop_category',$request->img);
         //没有勾选显示就默认隐藏
         if (!$request->status){
             $request->status =0;
         }
-        $model = Shop_category::create([
+        Shop_category::create([
             'name'=>$request->name,
             'status'=>$request->status,
-            'img'=>$fileName
+            'img'=>$request->img,
         ]);
         return redirect()->route('shop_categories.index')->with('success','添加成功');
     }
@@ -76,18 +78,17 @@ class Shop_categoryController extends Controller
         if (!$request->status){
             $request->status =0;
         }
-        //处理文件上传
-        $file = $request->img;
-        $data = [
+        //保存图片
+        if($request->img != null){
+            $fillName = $request->img;
+        }else{
+            $fillName = $request->old_img;
+        }
+        $shop_category->update([
             'name'=>$request->name,
             'status'=>$request->status,
-        ];
-        if($file){//有文件上传
-            $fileName = $file->store('public/img');
-            $fileName = url(Storage::url($fileName));
-            $data['img']=$fileName;
-        }
-        $shop_category->update($data);
+            'img'=>$fillName,
+        ]);
         //设置提示信息
         return redirect()->route('shop_categories.index')->with('success','更新成功');
     }

@@ -40,3 +40,18 @@ Route::get('login','SessionController@login')->name('login');
 Route::post('login','SessionController@store')->name('login');
 //注销
 Route::delete('logout','SessionController@logout')->name('logout');
+
+//活动
+Route::resource('activitys','ActivityController');
+
+
+//上传图片
+Route::post('upload',function (){
+    $storage = \Illuminate\Support\Facades\Storage::disk('oss');
+    $fileName = $storage->url($storage->putFile('upload',request()->file('file')));
+    return [
+        'fileName'=>$fileName
+    ];
+})->name('upload');
+
+
