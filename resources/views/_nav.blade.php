@@ -27,7 +27,7 @@
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">会员管理<span class="caret"></span></a>
                     <ul class="dropdown-menu">
-                        <li><a href="">会员用户管理</a></li>
+                        <li><a href="{{ route('members.index') }}">会员管理</a></li>
                         <li><a href="#">帮助页</a></li>
                     </ul>
                 </li>

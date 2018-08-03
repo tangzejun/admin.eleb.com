@@ -44,6 +44,13 @@ Route::delete('logout','SessionController@logout')->name('logout');
 //活动
 Route::resource('activitys','ActivityController');
 
+//会员管理
+Route::resource('members','MemberController');
+
+//订单统计
+Route::get('statistics','StatisticsController@index')->name('statistics');
+Route::get('menu','StatisticsController@menu')->name('statistics.menu');
+
 
 //上传图片
 Route::post('upload',function (){
